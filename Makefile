@@ -9,7 +9,17 @@ help:            ## list targets
 setup:           ## create the host venv and install the project (uv)
 	uv venv
 	uv pip install -e .
-	@[ -f .env ] || (cp .env.example .env && echo "created .env — put your API key in it")
+	@$(MAKE) --no-print-directory .env
+
+.env:            ## create the .env template (never overwrites an existing one)
+	@[ -f .env ] || { printf '%s\n' \
+		'# Read by the NATIVE gateway process only. Never passed into the agent container.' \
+		'# Fill in the key for whichever gateway.upstream you set in config.yaml.' \
+		'' \
+		'GROQ_API_KEY=' \
+		'# GEMINI_API_KEY=' \
+		'# OPENROUTER_API_KEY=' > .env; \
+		echo "created .env — put your API key in it"; }
 
 gateway:         ## start the NATIVE gateway in the background + wait for health
 	@if [ -f .gateway.pid ] && kill -0 `cat .gateway.pid` 2>/dev/null; then \

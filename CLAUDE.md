@@ -1,7 +1,8 @@
 # CLAUDE.md — conventions & invariants
 
-A SWE-bench coding agent. The spec is `coding-agent-design.md`; read it before
-changing architecture. This file is the short version for future sessions.
+A SWE-bench coding agent. The full design spec is kept outside the repo
+(`coding-agent-design.md`, untracked); read it before changing architecture.
+This file is the short version for future sessions.
 
 ## Topology (do not change)
 

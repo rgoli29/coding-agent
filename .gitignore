@@ -6,3 +6,6 @@ __pycache__/
 .gateway.log
 runs/
 .python-version
+
+# the design spec is kept local, outside the repo
+coding-agent-design.md

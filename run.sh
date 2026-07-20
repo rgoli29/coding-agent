@@ -20,8 +20,8 @@ if [ ! -d .venv ]; then
 fi
 
 if [ ! -f .env ]; then
-  cp .env.example .env
-  die ".env created — put your API key in it, then re-run. See README.md (Setup)."
+  make --no-print-directory .env
+  die "put your API key in .env, then re-run. See README.md (Setup)."
 fi
 
 grep -qE '^[A-Z_]+_API_KEY=.+' .env || die "no API key set in .env. See README.md (Setup)."
