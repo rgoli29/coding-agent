@@ -1,0 +1,15 @@
+services:
+  agent:
+    build:
+      context: .
+      dockerfile: docker/agent.Dockerfile
+    image: coding-agent:latest
+    # Shares the host network namespace so 127.0.0.1:8000 IS the native gateway.
+    network_mode: host
+    # Needs root to use the mounted socket (with rootless Docker, match the socket group).
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock   # spawn sandboxes on the host daemon
+      - ./config.yaml:/app/config.yaml:ro
+      - ./runs:/app/runs                            # persist outputs to the host
+    command: ["python", "-m", "src.main"]

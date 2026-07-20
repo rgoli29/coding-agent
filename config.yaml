@@ -1,0 +1,41 @@
+model:
+  name: llama-3.3-70b-versatile
+  temperature: 0.0
+
+gateway:
+  host: 127.0.0.1
+  port: 8000
+  upstream: groq                # gemini | groq | openrouter
+  requests_per_minute: 25       # match your free-tier RPM
+  tokens_per_minute: 12000      # Groq free tier TPM — the limit that actually binds
+                                # (enforced from M3; until then the upstream 429s)
+  cache: true
+  max_retries: 5
+
+agent:
+  type: mini                    # mini (A) -> graph (B). THE A/B switch.
+  max_steps: 40
+  max_cost_usd: 0.0             # 0 = free tier only
+  step_timeout_s: 120
+  history_token_budget: 60000   # context budget; oldest steps are dropped first
+
+dataset:
+  name: swe-bench-lite
+  split: test
+  limit: 10                     # start tiny (ignored when instance_ids is set)
+  # Pin SAME-repo instances: environment images are one per repo and are the
+  # dominant disk cost. These are all django/django.
+  instance_ids:
+    - django__django-11099
+    - django__django-11049
+    - django__django-10914
+
+sandbox:
+  task_timeout_s: 900
+  pull_timeout_s: 300           # raise if image pulls are slow
+
+eval:
+  run_eval: true
+  max_workers: 1                # 16 GB RAM -> keep at 1 (try 2 if stable)
+  cache_level: env              # reuse repo images, drop instance images
+  clean: true                   # remove instance images after use
