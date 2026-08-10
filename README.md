@@ -328,6 +328,13 @@ repeatedly and have disk to spare, set `clean: false`.
 Run directories are owned by root (the agent container runs as root to use the
 docker socket). Use `make clean-runs` rather than `rm -rf` as your user.
 
+The native gateway keeps its own state in **`runs/gateway/`** (stable across
+runs, so the cache survives): `cache.json` (persisted response cache, keyed on
+model+messages+temperature) and `calls.jsonl` (per-call log of tokens, cost,
+cache hits, and retries). Its process log is separate, at `logs/gateway.log`.
+`GET /stats` on the gateway returns live counters. A re-run of the same eval
+replays from `cache.json` and costs nothing upstream.
+
 ### Reading the report
 
 `report.md` leads with the resolve rate, then a per-instance table, then the
@@ -371,8 +378,10 @@ Expected — the agent container runs as root for socket access. Use
 Instance images are multi-GB. Raise `sandbox.pull_timeout_s`.
 
 **Rate-limit (429) errors from upstream**
-Lower `gateway.requests_per_minute` / `tokens_per_minute` to match your free
-tier. From M3 the gateway throttles and retries these itself.
+The gateway paces requests under `gateway.requests_per_minute` /
+`tokens_per_minute` and retries 429s with backoff, so these should be rare. If
+you still see them, lower those two values to match your free tier — the token
+limit (tpm) usually binds first.
 
 ---
 
@@ -386,7 +395,7 @@ before the next one started.
 | **M0** | Skeleton, config, native gateway (passthrough), container plumbing | ✅ done |
 | **M1** | `DockerEnvironment`, `BashTool`, `MiniAgent`, `History`, predictions | ✅ done |
 | **M2** | Dataset subset, SWE-bench harness wrapper, telemetry + report | ✅ done |
-| **M3** | Gateway hardening: response cache, rpm/tpm rate limiting, 429 backoff, cost logging | planned |
+| **M3** | Gateway hardening: response cache, rpm/tpm rate limiting, 429 backoff, cost logging | ✅ done |
 | **M4** | Improve Approach A: self-verification before submit, better localization — each behind a config flag | planned |
 | **M5** | Approach B: `agents/graph.py` + `tools/structured.py`, selected by `agent.type: graph` | planned |
 

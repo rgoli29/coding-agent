@@ -12,6 +12,9 @@ from pydantic import BaseModel, Field
 class ModelConfig(BaseModel):
     name: str = "gemini-2.5-flash"
     temperature: float = 0.0
+    # For the gateway's cost estimate. Free tier -> leave at 0 (cost logs as $0).
+    input_usd_per_1m: float = 0.0
+    output_usd_per_1m: float = 0.0
 
 
 class GatewayConfig(BaseModel):

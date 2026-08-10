@@ -1,16 +1,17 @@
 model:
   name: llama-3.3-70b-versatile
   temperature: 0.0
+  input_usd_per_1m: 0.0         # for the gateway cost log; free tier -> 0
+  output_usd_per_1m: 0.0
 
 gateway:
   host: 127.0.0.1
   port: 8000
   upstream: groq                # gemini | groq | openrouter
   requests_per_minute: 25       # match your free-tier RPM
-  tokens_per_minute: 12000      # Groq free tier TPM — the limit that actually binds
-                                # (enforced from M3; until then the upstream 429s)
-  cache: true
-  max_retries: 5
+  tokens_per_minute: 12000      # Groq free tier TPM — the limit that usually binds first
+  cache: true                   # persisted to runs/gateway/cache.json; re-runs replay free
+  max_retries: 5                # exponential backoff on 429 / 5xx before giving up
 
 agent:
   type: mini                    # mini (A) -> graph (B). THE A/B switch.
