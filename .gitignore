@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 .env
 .gateway.pid
-.gateway.log
+logs/
 runs/
 .python-version
 

@@ -268,7 +268,7 @@ make help          # list every target
 make setup         # host venv + deps + .env
 make gateway       # start the native gateway (background), wait for health
 make health        # curl /health
-make logs          # tail the gateway log (.gateway.log)
+make logs          # tail the gateway log (logs/gateway.log)
 make stop-gateway  # stop it
 make plan          # preflight + run plan, no model calls
 make run           # gateway + full containerized pipeline
@@ -352,7 +352,7 @@ of the project.
 
 **`[FAIL] no gateway at http://127.0.0.1:8000`**
 The gateway is not running or died at startup. `make gateway`, then check
-`.gateway.log` — usually a missing key (it fails fast and names the empty env var).
+`logs/gateway.log` — usually a missing key (it fails fast and names the empty env var).
 
 **`[FAIL] docker info failed` inside the container**
 Socket mount or permissions. Confirm `docker info` works on the host and that

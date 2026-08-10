@@ -22,11 +22,12 @@ setup:           ## create the host venv and install the project (uv)
 		echo "created .env — put your API key in it"; }
 
 gateway:         ## start the NATIVE gateway in the background + wait for health
+	@mkdir -p logs
 	@if [ -f .gateway.pid ] && kill -0 `cat .gateway.pid` 2>/dev/null; then \
 		echo "gateway already running (pid `cat .gateway.pid`)"; \
 	else \
-		$(PY) -m src.llm.gateway_server > .gateway.log 2>&1 & echo $$! > .gateway.pid; \
-		echo "gateway started (pid `cat .gateway.pid`), logging to .gateway.log"; \
+		$(PY) -m src.llm.gateway_server > logs/gateway.log 2>&1 & echo $$! > .gateway.pid; \
+		echo "gateway started (pid `cat .gateway.pid`), logging to logs/gateway.log"; \
 	fi
 	@./scripts/wait_for_gateway.sh $(GATEWAY_URL)/health
 
@@ -50,7 +51,7 @@ report:          ## rebuild the report from the last run
 	docker compose run --rm agent python -m src.main --report-only
 
 logs:            ## tail the native gateway log
-	@tail -f .gateway.log
+	@tail -f logs/gateway.log
 
 clean-runs:      ## delete run outputs
 	rm -rf runs/*
